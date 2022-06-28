@@ -1,8 +1,10 @@
 import { useRouter } from "next/router";
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
-import { json } from "stream/consumers";
+
 import Dashboard from "../../components/Dashboard";
 import api from "../../services/request";
+import { GetServerSideProps } from 'next';
+import { parseCookies } from 'nookies';
 
 
 interface interfProps {
@@ -26,26 +28,27 @@ export default function Pesquisa(props: interfProps) {
         if (Number.isInteger(idParam)) {
 
 
-            api.get('/pesquisas/' + idParam, {
+            api.get('/perguntas/' + idParam, {
                 headers: {
                     'Authorization': 'Bearer ' + props.token
                 }
             }).then((res) => {
-                if (res.data) {
+                // if (res.data) {
 
-                    setEstaEditando(true);
+                //     setEstaEditando(true);
 
-                    // refForm.current['nome'].value = res.data.nome
-                    // refForm.current['email'].value = res.data.email
-                    // refForm.current['telefone'].value = res.data.telefone
-                    // refForm.current['cpf'].value = res.data.cpf || ''
-                    // refForm.current['cidade'].value = res.data.cidade || ''
-                    // refForm.current['estado'].value = res.data.estado || ''
-                    // refForm.current['endereco'].value = res.data.endereco || ''
-                    // refForm.current['bairro'].value = res.data.bairro || ''
-                    // refForm.current['numero'].value = res.data.numero || ''
+                //     refForm.current['titulo'].value = res.data.titulo
+                //     refForm.current['descricao'].value = res.data.descricao
+                //     refForm.current['pergunta1'].value = res.data.pergunta1
+                //     refForm.current['pergunta2'].value = res.data.pergunta1
+                //     refForm.current['pergunta3'].value = res.data.pergunta1
 
-                }
+
+
+
+                // }
+                console.log(res.data);
+
             }).catch((erro) => {
                 console.log(erro)
             })
@@ -72,22 +75,24 @@ export default function Pesquisa(props: interfProps) {
 
 
             }
+            console.log(obj);
+            
 
 
 
 
-            // api.post('/clients', obj, {
-            //     headers: {
-            //         'Authorization': 'Bearer ' + props.token
-            //     }
-            // })
-            //     .then((res) => {
+            api.post('/pesquisas', obj, {
+                headers: {
+                    'Authorization': 'Bearer ' + props.token
+                }
+            })
+                .then((res) => {
 
-            //         router.push('/cliente')
+                    router.push('/pesquisa')
 
-            //     }).catch((err) => {
-            //         console.log(err)
-            //     })
+                }).catch((err) => {
+                    console.log(err)
+                })
             console.log(obj);
 
 
@@ -98,6 +103,39 @@ export default function Pesquisa(props: interfProps) {
         }
 
     }, [])
+
+    const editForm = useCallback((e: FormEvent) => {
+        e.preventDefault();
+
+        if (refForm.current.checkValidity()) {
+            let obj: any = new Object;
+
+            for (let index = 0; index < refForm.current.length; index++) {
+                const id = refForm.current[index].id;
+                const value = refForm.current[index].value;
+
+                if (id === 'botao') break;
+                obj[id] = value;
+
+
+            }
+
+
+            api.put('/pesquisas/' + id, obj, {
+                headers: {
+                    'Authorization': 'Bearer ' + props.token
+                }
+            }).then((res) => {
+                router.push('/pesquisa')
+            })
+
+
+
+        } else {
+            refForm.current.classList.add('was-validated')
+        }
+    }, [])
+
 
     return (
         <Dashboard>
@@ -130,25 +168,37 @@ export default function Pesquisa(props: interfProps) {
                 </div>
 
                 {/* Perguntas */}
-                <div className='col-md-6' >
+                <div className='col-md-12' >
 
 
-                    <label htmlFor='pergunta_id' className='form-label' >
+                    <label htmlFor='pergunta1' className='form-label' >
                         Pergunta 1
                     </label>
                     <input type='text' id="pergunta1" className='form-control' placeholder='Digite sua pergunta' required />
 
 
-                    <label htmlFor='pergunta_id' className='form-label' >
+                    <label htmlFor='pergunta2' className='form-label' >
                         Pergunta 2
                     </label>
                     <input type='text' id="pergunta2" className='form-control' placeholder='Digite sua pergunta' required />
 
 
-                    <label htmlFor='pergunta_id' className='form-label' >
+                    <label htmlFor='pergunta3' className='form-label' >
                         Pergunta 3
                     </label>
                     <input type='text' id="pergunta3" className='form-control' placeholder='Digite sua pergunta' required />
+
+                    <label htmlFor='pergunta4' className='form-label' >
+                        Pergunta 4
+                    </label>
+                    <input type='text' id="pergunta4" className='form-control' placeholder='Digite sua pergunta' required />
+
+                    <label htmlFor='pergunta5' className='form-label' >
+                        Pergunta 5
+                    </label>
+                    <input type='text' id="pergunta5" className='form-control' placeholder='Digite sua pergunta' required />
+
+
 
                     <div className='invalid-feedback'>
                         Por favor digite suas perguntas.
@@ -157,7 +207,22 @@ export default function Pesquisa(props: interfProps) {
                 </div>
 
 
+                {/* TIPO DA PERGUNTA */}
+                <div className='col-md-6'>
+                    <label
+                        htmlFor='tipo'
+                        className='form-label'
+                    >
+                        Tipo
+                    </label>
+                    <select className='form-select' name="tipo" id="tipo" defaultValue={""}>
+                        <option value="">Selecione o tipo</option>
+                        <option value="discurssiva">discurssiva</option>
+                        
+                    </select>
+                </div>
 
+             
 
 
 
@@ -183,3 +248,36 @@ export default function Pesquisa(props: interfProps) {
         </Dashboard >
     )
 }
+
+export const getServerSideProps:
+    GetServerSideProps = async (contexto) => {
+        const { 'access_token': token } = parseCookies(contexto);
+
+        if (!token) {
+            return {
+                redirect: {
+                    destination: '/login',
+                    permanent: false
+                }
+            }
+        }
+
+        // const temPermissaoPage = validaPermissao(
+        //     token, ['admin']
+        // )
+
+        // if (!temPermissaoPage) {
+        //     return {
+        //         redirect: {
+        //             destination: '/dashboard',
+        //             permanent: false
+        //         }
+        //     }
+        // }
+
+        return {
+            props: {
+                token
+            }
+        }
+    }

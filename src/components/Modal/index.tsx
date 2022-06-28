@@ -2,6 +2,8 @@ import { ReactNode, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { ModalView } from "./style";
 import {AiOutlineClose} from 'react-icons/ai'
+import { useRouter } from "next/router";
+import api from "../../services/request";
 
 interface InterfacePropsModal {
     children: ReactNode;
@@ -10,7 +12,34 @@ interface InterfacePropsModal {
 }
 
 
+
+
+
 export default function Modal({ show, onClose, children }: InterfacePropsModal) {
+
+    useEffect(() => {
+
+        try {
+
+             api.get('/clients/' + $id, {
+                headers: {
+                    'Authorization': 'Bearer ' + $token
+                }
+
+            }).then((res) => {
+                setClientSolo(res.data)
+                console.log(clientSolo);
+
+
+            })
+        } catch (error) {
+            console.log(error);
+
+        }
+    }, [])
+
+
+    
     const
         [isBrowser, setIsBrowser] = useState<boolean>(false);
 
@@ -24,6 +53,7 @@ export default function Modal({ show, onClose, children }: InterfacePropsModal) 
     }
 
     const modalContent = show ? (
+        
         <ModalView>
             <div>
                 <a href="#" onClick={handleClose}>

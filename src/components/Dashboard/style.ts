@@ -2,6 +2,9 @@ import Link from "next/link";
 import styled from "styled-components";
 import { btnReset, v } from "../../../styles/variable";
 
+interface Sidebar {
+    isOpen: Function;
+ };
 
 
 export const Sidebar = styled.div`

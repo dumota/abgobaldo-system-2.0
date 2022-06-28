@@ -2,7 +2,7 @@ import jwt_decode from 'jwt-decode';
 
 export const validaPermissao = (
     token: string | undefined,
-    permissao: Array<string>
+    tipo: Array<string>
 ): boolean => {
 
     if (token) {
@@ -15,7 +15,7 @@ export const validaPermissao = (
         }>(token);
 
 
-        const temPermissao = permissao.includes(
+        const temPermissao = tipo.includes(
             user.tipo
         );
 

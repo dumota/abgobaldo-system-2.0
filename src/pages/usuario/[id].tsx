@@ -37,8 +37,8 @@ export default function Cliente(props: interfProps) {
                     refForm.current['name'].value = res.data.name
                     refForm.current['email'].value = res.data.email
                     refForm.current['password'].value = res.data.password
-                    refForm.current['tipo'].value = res.data.tipo
                     refForm.current['status'].value = res.data.status
+                    refForm.current['tipo'].value = res.data.tipo
 
                 }
             }).catch((erro) => {
@@ -65,6 +65,7 @@ export default function Cliente(props: interfProps) {
 
             }
            
+            console.log(obj);
             
             api.post('/registro', obj)
                 .then((res) => {
@@ -242,8 +243,8 @@ export default function Cliente(props: interfProps) {
                             id='status'
                         >
                             <option value=''>Selecione o tipo</option>
-                            <option value='1'>Ativo</option>
-                            <option value='0'>Inativo</option>
+                            <option value={1}>Ativo</option>
+                            <option value={0}>Inativo</option>
                         </select>
                         <div className='invalid-feedback'>
                             Por favor selecione o status.
@@ -291,18 +292,18 @@ export const getServerSideProps:
             }
         }
 
-        // const temPermissaoPage = validaPermissao(
-        //     token, ['admin']
-        // )
+        const temPermissaoPage = validaPermissao(
+            token, ['admin']
+        )
 
-        // if (!temPermissaoPage) {
-        //     return {
-        //         redirect: {
-        //             destination: '/dashboard',
-        //             permanent: false
-        //         }
-        //     }
-        // }
+        if (!temPermissaoPage) {
+            return {
+                redirect: {
+                    destination: '/dashboard',
+                    permanent: false
+                }
+            }
+        }
 
         return {
             props: {

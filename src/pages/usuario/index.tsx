@@ -6,6 +6,7 @@ import { useContext, useEffect, useState } from 'react';
 import Dashboard from '../../components/Dashboard';
 import { AutenticacaoContext } from '../../contexts/AutenticacaoContext';
 import api from '../../services/request';
+import { validaPermissao } from '../../services/validaPermissao';
 
 
 interface interfProps {
@@ -141,18 +142,18 @@ export const getServerSideProps:
             }
         }
 
-        // const temPermissaoPage = validaPermissao(
-        //     token, ['admin']
-        // )
+        const temPermissaoPage = validaPermissao(
+            token, ['admin']
+        )
 
-        // if (!temPermissaoPage) {
-        //     return {
-        //         redirect: {
-        //             destination: '/dashboard',
-        //             permanent: false
-        //         }
-        //     }
-        // }
+        if (!temPermissaoPage) {
+            return {
+                redirect: {
+                    destination: '/dashboard',
+                    permanent: false
+                }
+            }
+        }
 
         return {
             props: {

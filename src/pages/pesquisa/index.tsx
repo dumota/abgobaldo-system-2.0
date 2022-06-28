@@ -38,7 +38,7 @@ export default function Pesquisa(props:interfProps){
 
                 // setclientes(res.data)
                 setPesquisas(res.data);
-                console.log(res.data);
+                
                 
                 setLoading(false)
             }).catch((erro) => {

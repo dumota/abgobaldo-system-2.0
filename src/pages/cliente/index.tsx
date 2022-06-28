@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { GetServerSideProps } from 'next';
 import { parseCookies } from 'nookies';
 import Dashboard from "../../components/Dashboard";
@@ -8,6 +8,9 @@ import api from "../../services/request";
 import { validaPermissao } from "../../services/validaPermissao";
 import { AutenticacaoContext } from "../../contexts/AutenticacaoContext";
 import Modal from "../../components/Modal";
+import { data } from "jquery";
+import { ClientsContext } from "../../contexts/ClientsContext";
+
 
 interface interfProps {
     token?: string;
@@ -19,18 +22,21 @@ interface interfUsuario {
     email: string,
     endereco?: string,
     id: number,
+    cidade?:string,
+    estado?:string,
     nome: string,
     numero?: string,
     telefone: string,
-    
+
 }
 
 export default function Cliente(props: interfProps) {
 
     const router = useRouter();
     const [clientes, setclientes] = useState<Array<interfUsuario>>([]);
-    const [showModal, setShowModal] = useState<boolean>(false);
-    const {setLoading} = useContext(AutenticacaoContext);
+    const { setLoading } = useContext(AutenticacaoContext);
+  
+    const {setShowModal, dados, showModal, setClientSolo, clientSolo} = useContext(ClientsContext);
 
     useEffect(() => {
 
@@ -52,36 +58,37 @@ export default function Cliente(props: interfProps) {
 
     }, [])
 
-
-    async function deleteUser (element: interfUsuario) {
-        const id = element.id ? element.id :null ;
-         setLoading(true);
-        await api.delete(`/clients/${id}`,{
-            headers:{
-                Authorization : `Bearer ${props.token}`
+    async function deleteUser(element: interfUsuario) {
+        const id = element.id ? element.id : null;
+        setLoading(true);
+        await api.delete(`/clients/${id}`, {
+            headers: {
+                Authorization: `Bearer ${props.token}`
             }
-        }).then((res)=>{
+        }).then((res) => {
             console.log(res);
-           
-           
-            
-        }).catch((err)=>{
+
+
+
+        }).catch((err) => {
             console.log(err);
-            
+
         })
-    
+
         await api.get('/clients', {
-            headers:{
-                Authorization : `Bearer ${props.token}`
+            headers: {
+                Authorization: `Bearer ${props.token}`
             }
-        }).then((res)=>{
+        }).then((res) => {
             setclientes(res.data);
             setLoading(false);
-            
+
         })
-        
+
     }
 
+
+   
     return (
         <Dashboard>
             <>
@@ -90,8 +97,8 @@ export default function Cliente(props: interfProps) {
                 </Head>
 
                 <div
-                   
-               
+
+
                 >
 
                     <>
@@ -105,10 +112,17 @@ export default function Cliente(props: interfProps) {
                                 className={"btn-toolbar mb-2 mb-md-0"}
                             >
                                 <button
-                                    className='btn btn-success'
+                                    className='btn btn-success' style={{
+                                        marginInline: 2
+                                    }}
                                     type="button"
                                     onClick={() => { router.push('/cliente/adicionar') }}
                                 >Adicionar</button>
+                                <button
+                                    className='btn btn-success '
+                                    type="button"
+                                    onClick={() => { router.push('/pesquisa/adicionar') }}
+                                >Nova pesquisa</button>
                             </div>
                         </div>
                     </>
@@ -149,11 +163,12 @@ export default function Cliente(props: interfProps) {
                                                     className='btn btn-danger'
                                                     onClick={() => {
                                                         deleteUser(element);
-                                                     }}
+                                                    }}
                                                 >
                                                     Excluir
                                                 </button>
-                                                <button onClick={()=> setShowModal(true)} className="btn btn-warning">
+                                                <button onClick={() => {router.push(`/detalhe/${element.id}`)}} className="btn btn-warning m-2" >
+
                                                     Visualizar
                                                 </button>
                                             </td>
@@ -166,19 +181,8 @@ export default function Cliente(props: interfProps) {
 
                     </table>
                 </div>
-                <Modal show={showModal} onClose={()=> setShowModal(false)}>
-                    {
-                        clientes.map((client , index)=>{
-                            return(
-                                <tr key={client.id}>
-                                    <td>{client.nome}</td>
-                                    <td>{client.email}</td>
-                                </tr>
-                               
-                            )
-                        })
-                    }
-                </Modal>
+              
+              
             </>
         </Dashboard>
     )

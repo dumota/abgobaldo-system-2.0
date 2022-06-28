@@ -1,46 +1,49 @@
 import { GetServerSideProps } from "next";
 import { parseCookies } from "nookies";
 import { Divider, LinkContainer, Logo, Sidebar, SLayout, SLink, SLinkIcon, SLinkLabel, SMain, SSidebarButton, Stheme, SThemeLabel, SThemeTooggler, SToggleThumb } from "./style";
-import { AiOutlineHome, AiOutlineLeft } from 'react-icons/ai'
+import { AiOutlineHome, AiOutlineLeft, AiOutlinePlusCircle } from 'react-icons/ai'
 import { MdLogout } from 'react-icons/md'
 import { BiSearchAlt } from 'react-icons/bi';
 import { IoIosPeople } from 'react-icons/io';
+import { IoPeopleCircle } from 'react-icons/io5';
 import Link from "next/link";
 import { ReactNode, useContext, useState } from "react";
 import { ThemeContext } from "../../contexts/ThemeContext";
 import { validaPermissao } from "../../services/validaPermissao";
 import { AutenticacaoContext } from "../../contexts/AutenticacaoContext";
 import { Router, useRouter } from "next/router";
+import { BsSearch, BsPersonPlus } from 'react-icons/bs';
 
 interface InterfaceProps {
     children: ReactNode;
-    token?:string;
- 
+    token?: string;
+
+
 }
 
 
-export default function Dashboard(props:InterfaceProps) {
+export default function Dashboard(props: InterfaceProps) {
 
     const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
     const { setTheme, theme } = useContext(ThemeContext);
     const { setLoading } = useContext(AutenticacaoContext);
     const router = useRouter();
     function logout() {
-     setLoading(true);
-     var coockies = document.cookie.split(";");
-     for (let index = 0; index < coockies.length; index++) {
-         var cookie = coockies[index];
-         var eqPos = cookie.indexOf("=");
-         var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-           document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";  
-         
-                 
-     }
-     
-     setLoading(false);
-     router.push('/login');
+        setLoading(true);
+        var coockies = document.cookie.split(";");
+        for (let index = 0; index < coockies.length; index++) {
+            var cookie = coockies[index];
+            var eqPos = cookie.indexOf("=");
+            var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
 
- }
+
+        }
+
+        setLoading(false);
+        router.push('/login');
+
+    }
 
     return (
         <SLayout>
@@ -50,34 +53,116 @@ export default function Dashboard(props:InterfaceProps) {
                         <AiOutlineLeft />
                     </SSidebarButton>
                 </>
-                <Logo>
-                    <img src="/assets/logo.svg" alt="logo" />
-                </Logo>
+
                 <Divider />
-                {linksArray.map(({ icon, label, to }) => (
-                    <LinkContainer key={label} >
-                        <Link href={to}>
+
+                <LinkContainer  >
+                    <Link href={'/dashboard'} >
+                        <SLink style={!sidebarOpen ? { width: `fit-content` } : {}}>
+                            <SLinkIcon><AiOutlineHome /></SLinkIcon>
+                            {
+                                sidebarOpen && (
+                                    <>
+                                        <SLinkLabel>DashBoard</SLinkLabel>
+                                    </>
+                                )
+                            }
+                        </SLink>
+                    </Link>
+                </LinkContainer>
+
+
+
+                <LinkContainer  >
+                    <Link href={'/cliente'} >
+                        <SLink style={!sidebarOpen ? { width: `fit-content` } : {}}>
+                            <SLinkIcon><IoIosPeople /></SLinkIcon>
+                            {
+                                sidebarOpen && (
+                                    <>
+                                        <SLinkLabel>Clientes</SLinkLabel>
+                                    </>
+                                )
+                            }
+                        </SLink>
+                    </Link>
+                </LinkContainer>
+
+
+                <LinkContainer  >
+                    <Link href={'/cliente/criar'} >
+                        <SLink style={!sidebarOpen ? { width: `fit-content` } : {}}>
+                            <SLinkIcon><AiOutlinePlusCircle /></SLinkIcon>
+                            {
+                                sidebarOpen && (
+                                    <>
+                                        <SLinkLabel>Add Cliente</SLinkLabel>
+                                    </>
+                                )
+                            }
+                        </SLink>
+                    </Link>
+                </LinkContainer>
+
+                <LinkContainer  >
+                    <Link href={'/pesquisa'} >
+                        <SLink style={!sidebarOpen ? { width: `fit-content` } : {}}>
+                            <SLinkIcon> <BsSearch /></SLinkIcon>
+                            {
+                                sidebarOpen && (
+                                    <>
+                                        <SLinkLabel>Pesquisas</SLinkLabel>
+                                    </>
+                                )
+                            }
+                        </SLink>
+                    </Link>
+                </LinkContainer>
+
+
+            
+               
+                    <LinkContainer  >
+                        <Link href={'/usuario/criar'} >
                             <SLink style={!sidebarOpen ? { width: `fit-content` } : {}}>
-                                <SLinkIcon>{icon}</SLinkIcon>
+                                <SLinkIcon><BsPersonPlus /></SLinkIcon>
                                 {
                                     sidebarOpen && (
                                         <>
-                                            <SLinkLabel>{label}</SLinkLabel>
+                                            <SLinkLabel>Add Usuario</SLinkLabel>
                                         </>
                                     )
                                 }
                             </SLink>
                         </Link>
-
-
                     </LinkContainer>
-                ))}
+                
+
+
+
+
+                <LinkContainer  >
+                    <Link href={'/usuario'} >
+                        <SLink style={!sidebarOpen ? { width: `fit-content` } : {}}>
+                            <SLinkIcon><IoPeopleCircle /></SLinkIcon>
+                            {
+                                sidebarOpen && (
+                                    <>
+                                        <SLinkLabel>Usuario</SLinkLabel>
+                                    </>
+                                )
+                            }
+                        </SLink>
+                    </Link>
+                </LinkContainer>
+
+
                 <Divider />
                 {secondLinksArray.map((secondLink) => (
                     <LinkContainer key={secondLink.label}>
                         <div style={!sidebarOpen ? { width: `fit-content` } : {}}>
-                            <SLinkIcon>{secondLink.icon}</SLinkIcon>
-                            {sidebarOpen && <button onClick={logout}>{secondLink.label}</button>}
+                            <SLinkIcon onClick={logout}>{secondLink.icon}</SLinkIcon>
+                            {sidebarOpen && <p>{secondLink.label}</p>}
                         </div>
                     </LinkContainer>
                 ))}
@@ -107,39 +192,7 @@ export default function Dashboard(props:InterfaceProps) {
     )
 }
 
-const linksArray = [
-    {
-        label: "Dashboard",
-        icon: <AiOutlineHome />,
-        to: "/dashboard"
-    },
-    {
-        label: "Clientes",
-        icon: <IoIosPeople />,
-        to: "/cliente"
-    },
-    {
-        label: "Add cliente",
-        icon: <AiOutlineHome />,
-        to: "/cliente/criar"
-    },
-    {
-        label: "Usuarios",
-        icon: <AiOutlineHome />,
-        to: "/usuario"
-    },
-    {
-        label: "add Usuario",
-        icon: <AiOutlineHome />,
-        to: "/usuario/criar"
-    },
-    {
-        label: "Pesquisas",
-        icon: <AiOutlineHome />,
-        to: "/pesquisa"
-    },
 
-]
 
 const secondLinksArray = [
     {
@@ -162,6 +215,18 @@ export const getServerSideProps:
                 }
             }
         }
+
+        const temPermissaoPage = validaPermissao(token, ['admin']);
+
+        if (!temPermissaoPage) {
+            return {
+                redirect: {
+                    destination: '/dashboard',
+                    permanent: false
+                }
+            }
+        }
+
         return {
             props: {
                 token

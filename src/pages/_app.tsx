@@ -5,6 +5,7 @@ import { AutenticacaoProvider } from '../contexts/AutenticacaoContext';
 import GlobalStyle from '../../styles/globals'
 import { ThemesProvider } from '../contexts/ThemeContext'
 import { Loading } from '../components/Loading';
+import { ClientProvider } from '../contexts/ClientsContext';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
@@ -12,8 +13,10 @@ function MyApp({ Component, pageProps }: AppProps) {
       <ThemesProvider>
         <GlobalStyle />
         <AutenticacaoProvider>
-          <Loading/>
-          <Component {...pageProps} />
+          <ClientProvider>
+            <Loading />
+            <Component {...pageProps} />
+          </ClientProvider>
         </AutenticacaoProvider>
 
       </ThemesProvider>
